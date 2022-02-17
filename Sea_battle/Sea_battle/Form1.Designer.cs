@@ -109,6 +109,7 @@ namespace Sea_battle
             this.MaximizeBox = false;
             this.Name = "Form1";
             this.Text = "Sea Battle";
+            this.Load += new System.EventHandler(this.Form1_Load);
             this.ResumeLayout(false);
 
         }
