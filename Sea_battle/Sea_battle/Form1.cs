@@ -106,6 +106,33 @@ namespace Sea_battle
 
         }
 
+        //Метод для передачи хода противнику
+        public void EnemyMove() 
+        {
+            int x, y;
+            do
+            {
+                //гененрируем координаты выстрела противника
+                x = rnd.Next(1, 11); y = rnd.Next(1, 11);
+                //пока не встретим непораженную клетку
+            } while (HomeMap[x, y] == Chars[1] ||
+                     HomeMap[x, y] == Chars[3]);
+
+            //если клетка пустая
+            if (HomeMap[x, y] == Chars[0])
+                     HomeMap[x, y] = Chars[1];//рисуем волну
+                                              //иначе рисуем крестик
+            else HomeMap[x, y] = Chars[3];
+
+            //отображаем изменение карты на форме
+            Label a = HomeTP.Controls[x * 11 + y] as Label;
+            a.Text = Convert.ToString(HomeMap[x, y]);
+
+            //если противник попал в корабль, получает дополнительный ход
+            if (HomeMap[x, y] == Chars[3])
+            EnemyMove();
+        }
+
         //Метод для выстрелов по карте противника
         private void label1_Click(object sender, EventArgs e)
         {
@@ -117,26 +144,29 @@ namespace Sea_battle
                 Label b = EnemyTP.Controls[i] as Label;
                 if (a == b)
                     break;
+            }
 
                 //если на карте, по которой стреляли, оказалась пустота, рисуем волну
-                if (EnemyMap[i % 11, i % 11] == Chars[0])
+                if (EnemyMap[i / 11, i % 11] == Chars[0])
                 {
-                    EnemyMap[i % 11, i % 11] = Chars[1];
+                    EnemyMap[i / 11, i % 11] = Chars[1];
                     a.Text = Convert.ToString(Chars[1]);
+                    
+                //передаем ход противнику
+                 EnemyMove();
                 }
 
-                //передаем ход противнику
-                // EnemyMove();
+
 
                 //если на карте противника по координатам несбитый корабль, по рисуем сбитую клетку
-                if (EnemyMap[i % 11, i % 11] == Chars[2])
+                if (EnemyMap[i / 11, i % 11] == Chars[2])
                 {
-                    EnemyMap[i % 11, i % 11] = Chars[3];
+                    EnemyMap[i / 11, i % 11] = Chars[3];
                     a.Text = Convert.ToString(Chars[3]);
                 }
 
 
-            }
+            
         }
 
         public Form1()
@@ -154,7 +184,7 @@ namespace Sea_battle
                     a.Dock = DockStyle.Fill;//
                     a.AutoSize = false;
                     a.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-                    a.Font = new System.Drawing.Font("wingdings", 18);
+                    a.Font = new System.Drawing.Font("wingdings", 14);
                     a.Text = Convert.ToString(Chars[0]);
                     HomeTP.Controls.Add(a, j, i);
                 }
@@ -164,10 +194,10 @@ namespace Sea_battle
                 for (int j = 0; j < 11; j++)
                 {
                     Label a = new Label();
-                    a.Dock = DockStyle.Fill;//
+                    a.Dock = DockStyle.Fill;
                     a.AutoSize = false;
                     a.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-                    a.Font = new System.Drawing.Font("wingdings", 18);
+                    a.Font = new System.Drawing.Font("wingdings", 14);
                     a.Text = Convert.ToString(Chars[0]);
                     if (i > 0 && j > 0)
                         a.Click += label1_Click;//назначаем в качесве обработчика метод для выстрелов по карте противника
@@ -214,7 +244,7 @@ namespace Sea_battle
             //Отображаем карты
             ShowMap(HomeMap, HomeTP);
 
-            ShowMap(EnemyMap, EnemyTP);// карту противника не показываем
+            //ShowMap(EnemyMap, EnemyTP);// карту противника не показываем
 
         }
 
